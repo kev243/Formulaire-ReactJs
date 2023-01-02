@@ -1,7 +1,21 @@
-import React, { useRef } from 'react';
+import React, { useRef,useEffect, useState } from 'react';
 import emailjs from '@emailjs/browser';
+import {supabase} from '../client'
+
 
 const FormTemplate = () => {
+    // variable supabase
+    const[post,setPost]=useState({name:"", email:"", message:""})
+    const {name,email,message}=post
+
+   
+
+    // fonction post dans la bd supabase
+    async function createPost(){ await supabase.from('clients').insert([{name, email, message}]).single()
+    setPost({name:"", email:"", message:""});
+    
+    }
+
     const form = useRef();
 
     const sendEmail = (e) => {
@@ -27,24 +41,30 @@ const FormTemplate = () => {
                     formMessage.innerHTML="";
                 }, 2500);
             });
+
+            // on appel notre fonction pour envoyer les informations a la bd
+           createPost()
+            
     };
 
     return (
         <div className="form-container">
-            <form ref={form} onSubmit={sendEmail}>
+            <form ref={form} onSubmit={ sendEmail}>
+          
                 <label>Name</label>
-                <input type="text" name="name"  required autoComplete='off' />
+                <input type="text" name="name" value={name}  required autoComplete='off' onChange={e=>setPost({...post ,name:e.target.value})}  />
                 <label>Email</label>
-                <input type="email" name="email" required  autoComplete='off' />
+                <input type="email" name="email" value={email} required  autoComplete='off'  onChange={e=>setPost({...post ,email:e.target.value})} />
                 <label>Message</label>
-                <textarea name="message" />
+                <textarea name="message"  value={message} onChange={e=>setPost({...post ,message:e.target.value})}/>
                 <input type="submit" value="Send" />
+             
             </form>
             <div className="form-message">
                 
             </div>
         </div>
-
+//123alpharomeo@
     );
 };
 
